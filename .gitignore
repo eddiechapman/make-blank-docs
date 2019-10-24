@@ -2,3 +2,5 @@
 venv/
 *.csv
 __pycache__/
+*.docx
+*.log
