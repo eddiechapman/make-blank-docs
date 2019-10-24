@@ -7,14 +7,14 @@ degree # 204 has a false "skills" value, the document will be named
 "204-skills.docx".  
 
 usage:
-    $ python3 make_blank_docs.py [INPUT] [OUTPUT]
+    $ python3 make_blank_docs.py -i [INPUT] -o [OUTPUT]
 
     INPUT
         Path to a .csv file containing columns:
-            degree_id   - (int) ID of a single degree program
-            skills      - (str) one of 'TRUE', 'FALSE'
-            mission     - (str) one of 'TRUE', 'FALSE'
-            courses     - (str) one of 'TRUE', 'FALSE'
+            Degree_id   - (int) ID of a single degree program
+            Skills      - (str) one of 'T', 'F'
+            Mission     - (str) one of 'T', 'F'
+            Courses     - (str) one of 'T', 'F'
 
     OUTPUT
         Path to a directory where the documents will be stored.
@@ -52,13 +52,15 @@ def main(args):
 
     logging.info('Beginning program.')
 
-    with open(args.input, 'r') as f:
+    with open(INPUT, 'r') as f:
+        logging.debug(f'File opened: {INPUT}')
         reader = csv.DictReader(f)
         for row in reader:
             logging.debug(row)
-            for col in ['skills', 'courses', 'mission']:
-                if row[col] == 'FALSE':
-                    path = OUTPUT / f'{row['degree_id']}-{col}.docx'
+            degree_id = row['Degree_id'].zfill(3)
+            for col in ['Skills', 'Courses', 'Mission']:
+                if row[col] != 'T':
+                    path = OUTPUT / f'{degree_id}-{col}.docx'
                     doc = docx.Document()
                     doc.save(path)
                     logging.debug(f'Document saved: {path}')
@@ -74,12 +76,14 @@ if __name__ == '__main__':
         help='Verbose (debug) logging level.',
         const=logging.DEBUG, 
         dest='log_level',
+        nargs='?',
     )
     group.add_argument(
         '-q', '--quiet',
         help='Silent mode, only log warnings and errors.',
         const=logging.WARN,
         dest='log_level',
+        nargs='?',
     )
     parser.add_argument(
         '-i', '--input',
